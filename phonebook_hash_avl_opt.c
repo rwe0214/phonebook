@@ -1,26 +1,48 @@
 #include <stdlib.h>
 #include <string.h>
-#include "phonebook_opt.h"
+#include "phonebook_hash_avl_opt.h"
 
 /* TODO: FILL YOUR OWN IMPLEMENTATION HERE! */
-node *findName(char lastName[], node *n)
+node *findName(char lastName[], tree *table[])
 {
-    while(n != NULL) {
-        if(strcmp(lastName, n->lastName)==0)
-            return n;
-        else if(strcmp(lastName, n->lastName)>0)
-            n = n->rchild;
-        else
-            n = n->lchild;
+    unsigned int index = BKDRHash(lastName);
+    if(table[index]->root) {
+        node *n = table[index]->root;
+        while(n) {
+            if(strcmp(lastName, n->lastName)==0)
+                return n;
+            else if(strcmp(lastName, n->lastName)>0)
+                n = n->rchild;
+            else
+                n = n->lchild;
+        }
     }
     /* TODO: implement */
     return NULL;
 }
 
-void *append(char lastName[], tree *t)
+void *append(char lastName[], tree *table[])
 {
     /* TODO: implement */
-    insert_avl(t, lastName);
+    unsigned int index = BKDRHash(lastName);
+    if (table[index] == NULL) {
+        table[index] = create_avl();
+        insert_avl(table[index], lastName);
+    } else {
+        insert_avl(table[index], lastName);
+    }
+}
+
+unsigned int BKDRHash(char *str)
+{
+    unsigned int seed = 131;
+    unsigned int hash = 0;
+
+    while (*str) {
+        hash = hash * seed + (*str++);
+    }
+
+    return (hash & (HASH_TAB_SIZE-1));
 }
 
 node* rotate_rr(node *n)
@@ -213,6 +235,19 @@ node *balance_node(node *n)
     return b_root;
 }
 
+void init_tab(tree *table[])
+{
+    for(int i=0; i<HASH_TAB_SIZE; i++) {
+        table[i] = NULL;
+    }
+}
+
+void drop_tab(tree *table[])
+{
+    for(int i=0; i<HASH_TAB_SIZE; i++)
+        if(table[i] != NULL)
+            drop_tree(table[i]);
+}
 void drop_tree(tree *t)
 {
     free_node(t->root);

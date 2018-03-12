@@ -2,7 +2,8 @@
 #define _PHONEBOOK_H
 
 #define MAX_LAST_NAME_SIZE 16
-#define AVL_OPT 1
+#define HASH_AVL_OPT 1
+#define HASH_TAB_SIZE 524288
 
 /* TODO: After modifying the original version, uncomment the following
  * line to set OPT properly */
@@ -25,15 +26,16 @@ typedef struct __PHONE_BOOK_ENTRY {
     struct __PHONE_BOOK_ENTRY *lchild;
     struct __PHONE_BOOK_ENTRY *rchild;
 } node;
+
 typedef struct __AVL_TREE {
     struct __PHONE_BOOK_ENTRY *root;
 } tree;
 
-node *findName(char lastName[], node *n);
-void *append(char lastName[], tree *t);
+node *findName(char lastName[], tree *table[]);
+void *append(char lastName[], tree *table[]);
 
-
-
+//hash function
+unsigned int BKDRHash(char *str);
 //rotate function
 node* rotate_rr(node *n);
 node* rotate_ll(node *n);
@@ -49,6 +51,8 @@ int get_balance_factor(node *n);
 void balance_tree(tree *t);
 node* balance_node(node *n);
 
+void init_tab(tree *table[]);
+void drop_tab(tree *table[]);
 void drop_tree(tree *t);
 void free_node(node *n);
 
