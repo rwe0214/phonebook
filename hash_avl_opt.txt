@@ -800,3 +800,4 @@ append() findName() 0.107337 0.000000
 append() findName() 0.108602 0.000000
 append() findName() 0.109467 0.000000
 append() findName() 0.108751 0.000000
+append() findName() 0.138052 0.000000
